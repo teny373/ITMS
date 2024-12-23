@@ -1,7 +1,8 @@
 <script lang="ts">
     import { Input } from "$lib/components/ui/input";
     import { Button } from "$lib/components/ui/button/index.js";
-   
+    import MapContainer from "$lib/components/map/MapContainer.svelte";
+
      let popup = false;
      let email = "Email@mail.com";
      let name = "Name"
@@ -39,7 +40,7 @@
  
  </script>
  
- <main>
+ <main class="main">
      <div class="header">
          <div class="side-nav">
              <div class="icon">
@@ -79,8 +80,13 @@
                      <Button variant="outline" on:click={confirmed}>Confirm</Button>
                  </div>             
              </div>
-         {/if}  
-     </div>
+         {/if}
+         <div class="map-container">
+            <div style="border: 1px solid #ddd; padding: 10px;">
+              <MapContainer />
+            </div>
+          </div>  
+     </div>    
  
      
  </main>
@@ -91,7 +97,13 @@
      box-sizing: border-box;
      font-family: 'Poppins', sans-serif;
      margin: 0;
- }
+    }
+
+ .main {
+    display: flex;
+    flex-direction: row;   /* 子元素垂直排列 */
+    height: 100vh;          /* 占满视口高度 */
+    }
  
  .header {
     width:100%;
@@ -99,144 +111,98 @@
     background: url(/src/image/webpage.png);
     background-position: center;
     background-size: cover;
- }
+    }
  
  .side-nav{
-     width: 110px;
-     height: 100%;
-     position:fixed;
-     top:0;
-     left:0;
-     padding:30px 15px;
-     background: rgba(255,255,255,0.2);
-     backdrop-filter: blur(5px);
-     display: flex;
-     justify-content: space-between;
-     flex-direction: column;
-     transition: width 0.5s ease;
- }
+    width: 250px;  
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 30px 15px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    transition: none;
+    }
  
  .icon{
      display:flex;
      align-items: center;
      justify-content: space-between;
-     width: 60px;
      font-size: 12px;
      padding: 10px;
      margin-left: auto;
      margin-right: auto;
      overflow: hidden;
- }
+     width: 90%;
+     margin: 0;
+    }
  
  .icon h1{
      white-space: nowrap;
-     display: none;
+     display: block;
      font-size: 19px;
      font-weight: bold;
- }
+    }
  
  .wicon{
      width: 30px;
      height: 30px;
      margin:auto;
-     display: none;
- }
+     display:block;
+    }
  
  .user{
      display:flex;
      align-items: center;
      justify-content: space-between;
-     width: 60px;
      font-size: 12px;
      padding: 10px;
      border-radius: 8px;
-     margin-left: auto;
-     margin-right: auto;
-     margin-top: 0;
      overflow: hidden;
- }
+     width: 90%;
+     margin: 0;
+     background: rgb(255,255,255,0.2);
+     backdrop-filter: blur(5px);
+    }
  
  .user h2{
      font-size: 15px;
      font-weight: 600;
      white-space: nowrap;
- }
+    }
  
  .user-image{
      width:40px;
      border-radius: 50%;
      margin: auto;
- }
+    }
  
  .user div{
-     display: none;
- }
- 
- ul{
-     list-style: none;
-     padding:0 15px;
- }
- 
- ul li{
-    margin:30px 0;
-    display:flex;
-    align-items: center;
-    justify-content: center; 
-     cursor: pointer;
- }
- 
- ul li img{
-     width:30px;
-     margin-right: 0px;
- }
- 
- ul li p{
-     white-space: nowrap;
-     display: none;
- }
- 
- .side-nav:hover{
-     width: 250px;
- }
- 
- .side-nav:hover .wicon{
-     display:block;
- }
- 
- .side-nav:hover .icon h1{
-     display:block;
- }
- 
- .side-nav:hover .user div{
-     display:block;
- }
- 
- .side-nav:hover .user{
-     width: 90%;
-     margin: 0;
-     padding: 10px;
-     background: rgb(255,255,255,0.2);
-     backdrop-filter: blur(5px);
- }
- 
- .side-nav:hover .icon{
-     width: 90%;
-     margin: 0;
-     padding: 10px;
- }
- 
- .side-nav:hover ul li p{
      display: block;
- }
+    }
  
- .side-nav:hover ul li img{
-     margin-right: 10px;
- }
- 
- .side-nav:hover ul li{
-     justify-content: flex-start;
- }
- 
+ ul li {
+    margin: 30px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;  
+    cursor: pointer;
+    }
+
+ ul li p {
+    white-space: nowrap;
+    display: block; 
+    }
+
+ ul li img {
+    width: 30px;
+    margin-right: 10px; 
+    }
+
  .login-button {
      background: none; 
      border: none; 
@@ -245,7 +211,7 @@
      padding: 0; 
      text-align: left; 
      font-size: inherit; 
- }
+    }
  
  .modal {
      position: fixed;
@@ -260,14 +226,14 @@
      z-index: 1000; 
      align-items: center;   
      width:300px;
- }
+    }
  
  .modal-content{
      padding:10px;
      display: flex;
      flex-direction: column;
      align-items: center;
- }
+    }
  
  .close-button {
      position: absolute;
@@ -278,15 +244,18 @@
      font-size: 20px;
      cursor: pointer;
      color: #000000;
- }
+    }
  
  .modal-content h1{
      font-size: 20px;
      font-weight: bold;
      margin-bottom: 10px;
- }
- 
- 
- 
+    }
+
+ .map-container {
+     flex:1;
+     margin-left: 250px;  
+     padding: 2px;
+    }
  </style>
  

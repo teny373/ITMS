@@ -2,6 +2,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Button } from "$lib/components/ui/button/index.js";
     import MapContainer from "$lib/components/map/MapContainer.svelte";
+    import Disneydashboard from '../routes/Disneydashboard.svelte';
 
      let popup = false;
      let email = "Email@mail.com";
@@ -55,7 +56,7 @@
                  </div>
              </div>
              <ul>
-                 <li><img src="/src/image/dashboard.png" alt="dashboard"><p>Dashboard</p></li>
+                 <li ><img src="/src/image/dashboard.png" alt="dashboard"><p>Dashboard</p></li>
                  <li><img src="/src/image/reports.png" alt="reports"><p>Reports</p></li>
                  <li><img src="/src/image/messages.png" alt="message"><p>Message</p></li>
                  <li><img src="/src/image/projects.png" alt="project"><p>Our Projects</p></li>
@@ -85,7 +86,12 @@
             <div style="border: 1px solid #ddd; padding: 10px;">
               <MapContainer />
             </div>
-          </div>  
+         </div>  
+         <div class = "hot-disney">
+
+         <div style="border: 1px solid #ddd; padding: 10px;">
+              <Disneydashboard/>
+         </div>
      </div>    
  
      

@@ -26,13 +26,7 @@
 
         const markers = [{
           icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
-          position: [116.205467, 39.907761]
-        }, {
-          icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-2.png',
-          position: [116.368904, 39.913423]
-        }, {
-          icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-3.png',
-          position: [116.305467, 39.807761]
+          position: [121.661735, 31.141333]
         }];
 
         // 添加标记点

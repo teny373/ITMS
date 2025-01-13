@@ -1,188 +1,168 @@
 <script lang="ts">
-    import * as echarts from "echarts";
-    import { onMount } from "svelte";
-  
-    let yearChart: echarts.ECharts | null = null;
-    let dayChart: echarts.ECharts | null = null;
-    let yearDom: HTMLDivElement | null = null;
-    let dayDom: HTMLDivElement | null = null;
-  
-    // 获取每日数据并更新柱状图
-    async function get_data(date: string) {
-      if (!dayDom) return;
-      dayChart = echarts.init(dayDom);
-      dayChart.setOption({ title: { text: `获取 ${date} 的数据中..` } });
-  
-      try {
-        const response = await fetch(`${date}.json`);
-        const data = await response.json();
-  
-        const option = {
-          title: { text: `单日排队详情: ${data.date}` },
-          toolbox: { feature: { saveAsImage: {}, dataView: {} } },
-          legend: { data: ["最长等待时间", "平均等待时间"], z: 10 },
-          tooltip: {
-            trigger: "axis",
-            axisPointer: { type: "shadow", label: { show: true } },
+  import * as echarts from 'echarts';
+  import { onMount } from 'svelte';
+
+  let yearChart: echarts.ECharts | null = null;
+  let dayChart: echarts.ECharts | null = null;
+  let yearDom: HTMLDivElement | null = null;
+  let dayDom: HTMLDivElement | null = null;
+
+  // 获取每日数据并更新柱状图
+  async function get_data(date: string) {
+    if (!dayDom) return;
+    dayChart = echarts.init(dayDom);
+    dayChart.setOption({ title: { text: `获取 ${date} 的数据中..` } });
+
+    try {
+      const response = await fetch(`/${date}.json`);
+      const data = await response.json();
+
+      const option = {
+        title: { text: `单日排队详情: ${data.date}` },
+        toolbox: { feature: { saveAsImage: {}, dataView: {} } },
+        legend: { data: ["最长等待时间", "平均等待时间"], z: 10 },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: { type: "shadow", label: { show: true } },
+        },
+        grid: { width: "94%", left: "60px", y2: 150 },
+        yAxis: {
+          type: "value",
+          splitLine: { show: true },
+          max: 240,
+          interval: 60,
+          axisLabel: { formatter: "{value} 分钟" },
+        },
+        xAxis: {
+          type: "category",
+          inverse: true,
+          data: data.games,
+          axisLabel: { interval: 0, rotate: 40 },
+        },
+        series: [
+          {
+            name: "最长等待时间",
+            type: "bar",
+            barGap: "-100%",
+            data: data.max,
+            itemStyle: { normal: { color: "#37a2da" } },
+            label: { normal: { position: "top", formatter: "{c}m", show: true } },
           },
-          grid: { width: "94%", left: "60px", y2: 150 },
-          yAxis: {
-            type: "value",
-            splitLine: { show: true },
-            max: 240,
-            interval: 60,
-            axisLabel: { formatter: "{value} 分钟" },
+          {
+            name: "平均等待时间",
+            type: "bar",
+            data: data.mean,
+            itemStyle: { normal: { color: "#32c5e9" } },
+            label: { normal: { position: "top", formatter: "{c}m", show: false } },
           },
-          xAxis: {
-            type: "category",
-            inverse: true,
-            data: data.games,
-            axisLabel: { interval: 0, rotate: 40 },
-          },
-          series: [
-            {
-              name: "最长等待时间",
-              type: "bar",
-              barGap: "-100%",
-              data: data.max,
-              itemStyle: { normal: { color: "#37a2da" } },
-              label: { normal: { position: "top", formatter: "{c}m", show: true } },
-            },
-            {
-              name: "平均等待时间",
-              type: "bar",
-              data: data.mean,
-              itemStyle: { normal: { color: "#32c5e9" } },
-              label: { normal: { position: "top", formatter: "{c}m", show: false } },
-            },
-          ],
-        };
-  
-        dayChart.setOption(option);
-      } catch (error) {
-        console.error("获取数据失败：", error);
-      }
+        ],
+      };
+
+      dayChart.setOption(option);
+    } catch (error) {
+      console.error("获取数据失败：", error);
     }
-  
-    // 初始化年度热力图
-    onMount(async () => {
-      if (!yearDom) return;
-  
-      // 使用 setTimeout 确保 DOM 渲染完毕
-      await new Promise(resolve => setTimeout(resolve, 100));  // 等待100ms，确保 DOM 加载
-  
-      if (yearDom && dayDom) {
-        yearChart = echarts.init(yearDom);
-        dayChart = echarts.init(dayDom);
-      }
-      if (yearChart) {
-        try {
-            const response = await fetch("year.json");
-            const data = await response.json();
-    
-            const years = [];
-            const series = [];
-            const dt = new Date();
-            let i = 0;
-    
-            for (let year = 2016; year <= dt.getFullYear(); year++) {
-            years.push({
-                top: 90 + i * 220,
-                left: 40,
-                range: year,
-                cellSize: ["auto", 20],
-                dayLabel: {
-                nameMap: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
-                firstDay: 1,
-                },
-                monthLabel: { nameMap: "cn" },
-                yearLabel: { position: "top" },
-            });
-    
-            series.push({
-                type: "heatmap",
-                coordinateSystem: "calendar",
-                calendarIndex: i,
-                data,
-            });
-    
-            i++;
-            }
-    
-            // 类型断言：确保 yearDom 不为 null，并将其类型断言为 HTMLDivElement
-            (yearDom as HTMLDivElement).style.height = `${240 * i}px`;
-    
-            const option = {
-            title: { text: "年度热力图" },
-            tooltip: {
-                position: "top",
-                formatter: (p: any) => {
-                if (p && p.data && Array.isArray(p.data)) {
-                    const format = echarts.format.formatTime("yyyy-MM-dd", p.data[0]);
-                    return `${format}</br>平均等待 ${p.data[1]} 分钟`;
-                }
-                return "";
-                },
-            },
-            toolbox: { feature: { saveAsImage: {}, dataView: {} } },
-            visualMap: {
-                type: "piecewise",
-                itemSymbol: "triangle",
-                splitNumber: 6,
-                min: 0,
-                max: 30,
-                calculable: true,
-                orient: "horizontal",
-                left: "center",
-                top: "top",
-                z: 10,
-                text: ["拥挤", "空闲"],
-            },
-            calendar: years,
-            series,
-            };
-    
-            yearChart.setOption(option);
-    
-            yearChart.on("click", (params) => {
-            if (params.value && Array.isArray(params.value) && typeof params.value[0] === 'string') {
-                const date = params.value[0].split("T")[0];
-                get_data(date);
-            } else {
-                console.error("无效的参数值:", params.value);
-            }
-            });
-    
-            get_data("latest");
-        } catch (error) {
-            console.error("获取年度数据失败：", error);
-        }
-    
-        // 自动调整图表尺寸
-        window.onresize = () => {
-            yearChart?.resize();
-            dayChart?.resize();
-        };
-      } else {
-      console.error("年图表初始化失败！");
-      }
+  }
+
+  // 初始化年度热力图
+  function formatYearData(data: [string, number][]): [string, number][] {
+  return data.map(([date, value]) => [
+    echarts.format.formatTime("yyyy-MM-dd", date),
+    value,
+  ]);
+}
+
+  onMount(async () => {
+  if (!yearDom || !dayDom) {
+    console.error("yearDom 或 dayDom 未找到！");
+    return;
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 100)); // 等待 100ms，确保 DOM 加载
+
+  if (yearChart) echarts.dispose(yearChart);
+  yearChart = echarts.init(yearDom);
+
+  try {
+    const response = await fetch("/year.json");
+    const rawData = await response.json();
+    const formattedData = formatYearData(rawData);
+
+    console.log("Formatted Year Data:", formattedData);
+
+    const values = formattedData.map(([_, value]) => value);
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
+
+    const years = [];
+    const series = [];
+    let calendarIndex = 0;
+    const dt = new Date();
+
+    for (let year = 2016; year <= dt.getFullYear(); year++) {
+      years.push({
+        range: `${year}`,
+        top: 90 + calendarIndex * 220,
+        left: 40,
+        cellSize: ["auto", 20],
+        dayLabel: { nameMap: "cn", firstDay: 1 },
+        monthLabel: { nameMap: "cn" },
+      });
+
+      series.push({
+        type: "heatmap",
+        coordinateSystem: "calendar",
+        calendarIndex: calendarIndex,
+        data: formattedData.filter(([date]) => date.startsWith(`${year}`)),
+      });
+
+      calendarIndex++;
+    }
+
+    yearDom.style.height = `${240 * calendarIndex}px`;
+
+    yearChart.setOption({
+      title: { text: "年度热力图" },
+      calendar: years,
+      series: series,
+      visualMap: {
+        type: "piecewise",
+        min: minVal,
+        max: maxVal,
+        splitNumber: 6,
+        calculable: true,
+        orient: "horizontal",
+        left: "center",
+        top: "top",
+        text: ["拥挤", "空闲"],
+      },
+      tooltip: {
+        position: "top",
+        formatter: (params:any) => {
+          if (params?.data) {
+            const [date, value] = params.data;
+            return `${date}</br>平均等待 ${value} 分钟`;
+          }
+          return "";
+        },
+      },
     });
-  </script>
-  
-  <style>
-    #year {
-      width: 100%;
-    }
-  
-    #day {
-      width: 100%;
-      height: 400px;
-    }
-  </style>
-  
-  <div>
-    <div id="year" bind:this={yearDom}></div>
-    <div id="day" bind:this={dayDom}></div>
-  </div>
-  
-  
+
+    console.log("Heatmap Rendered Successfully.");
+  } catch (error) {
+    console.error("加载数据失败：", error);
+  }
+});
+
+</script>
+
+<style>
+  div {
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+</style>
+
+<div bind:this={yearDom} style="width: 100%; height: 500px;"></div>
+<div bind:this={dayDom} style="width: 100%; height: 500px;"></div>

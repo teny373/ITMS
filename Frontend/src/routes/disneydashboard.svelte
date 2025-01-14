@@ -72,7 +72,7 @@
   ]);
 }
 
-  onMount(async () => {
+onMount(async () => {
   if (!yearDom || !dayDom) {
     console.error("yearDom 或 dayDom 未找到！");
     return;
@@ -99,7 +99,15 @@
     let calendarIndex = 0;
     const dt = new Date();
 
+    // 使用一个 Set 来跟踪哪些年份有数据
+    const yearsWithData = new Set(formattedData.map(([date]) => date.split('-')[0]));
+
     for (let year = 2016; year <= dt.getFullYear(); year++) {
+      if (!yearsWithData.has(year.toString())) {
+        // 如果没有数据，跳过该年份
+        continue;
+      }
+
       years.push({
         range: `${year}`,
         top: 90 + calendarIndex * 220,
@@ -153,6 +161,7 @@
     console.error("加载数据失败：", error);
   }
 });
+
 
 </script>
 

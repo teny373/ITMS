@@ -2,15 +2,25 @@
     import { Input } from "$lib/components/ui/input";
     import { Button } from "$lib/components/ui/button/index.js";
     import MapContainer from "$lib/components/map/MapContainer.svelte";
-
-
+    import Dashboard from "./dashboard.svelte";
+    
+    
+     let dashboard = "Dashboard";
+     let reports = "Reports";
+     let Message = "Messagr";
+     let Map = "CityMap";
      let popup = false;
      let email = "Email@mail.com";
      let name = "Name"
      let inputemail="";
      let inputname="";
      let isLogin=false;
- 
+     let activeModule = "map"; 
+     
+     
+     function changeModule(id: string) {
+        activeModule = id;
+    }
      const login=()=>{
          if (isLogin){
              logout();
@@ -56,11 +66,26 @@
                  </div>
              </div>
              <ul>
-                 <li ><img src="/src/image/dashboard.png" alt="dashboard"><p>Dashboard</p></li>
-                 <li><img src="/src/image/reports.png" alt="reports"><p>Reports</p></li>
-                 <li><img src="/src/image/messages.png" alt="message"><p>Message</p></li>
-                 <li><img src="/src/image/projects.png" alt="project"><p>Our Projects</p></li>
-                 <li><img src="/src/image/setting.png" alt="setting"><p>Settings</p></li>
+                 <li ><img src="/src/image/dashboard.png" alt="dashboard" id="dashboard">
+                    <button class="dashboard-button" on:click={() => changeModule("dashboard")} class:active={activeModule === "dashboard"}>
+                        {dashboard}
+                    </button>
+                </li>
+                 <li><img src="/src/image/reports.png" alt="reports" id="reports">
+                    <button class="reports-button" on:click={() => changeModule("reports")} class:active={activeModule === "reports"}>
+                        {reports}
+                    </button>
+                </li>
+                 <li><img src="/src/image/messages.png" alt="message" id = "message">
+                    <button class="message-button" on:click={() => changeModule("message")} class:active={activeModule === "message"}>
+                        {Message}
+                    </button>
+                </li>
+                 <li><img src="/src/image/projects.png" alt="map" id="map">
+                    <button class="map-button" on:click={() => changeModule("map")} class:active={activeModule === "map"}>
+                        {Map}
+                    </button>
+                </li>
              </ul>
  
              <ul>
@@ -84,13 +109,19 @@
          {/if}
          <div class="map-container">
             <div style="border: 1px solid #ddd; padding: 10px;">
-              <MapContainer />
+              {#if activeModule === "map"}
+                <MapContainer />
+              {/if}
+              {#if activeModule === "dashboard"}
+                <Dashboard />
+              {/if}
             </div>
          </div>  
+       
          <div class = "hot-disney">
-
+            <Dashboard />
          <div style="border: 1px solid #ddd; padding: 10px;">
-        
+          
          </div>
      </div>    
  
@@ -199,15 +230,50 @@
     cursor: pointer;
     }
 
- ul li p {
-    white-space: nowrap;
-    display: block; 
-    }
-
  ul li img {
     width: 30px;
     margin-right: 10px; 
     }
+
+ .dashboard-button{
+    background: none; 
+     border: none; 
+     color: inherit; 
+     cursor: pointer; 
+     padding: 0; 
+     text-align: left; 
+     font-size: inherit; 
+ }
+
+ .reports-button{
+    background: none; 
+     border: none; 
+     color: inherit; 
+     cursor: pointer; 
+     padding: 0; 
+     text-align: left; 
+     font-size: inherit; 
+ }
+
+ .message-button{
+    background: none; 
+     border: none; 
+     color: inherit; 
+     cursor: pointer; 
+     padding: 0; 
+     text-align: left; 
+     font-size: inherit; 
+ }
+
+ .map-button{
+    background: none; 
+     border: none; 
+     color: inherit; 
+     cursor: pointer; 
+     padding: 0; 
+     text-align: left; 
+     font-size: inherit; 
+ }
 
  .login-button {
      background: none; 
